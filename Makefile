@@ -12,14 +12,14 @@ all:
 
 .PHONY : pyclean
 pyclean:
-	cd fastFM/
+	cd fastFM2/
 	rm -f *.so
-	rm -f fastFM/ffm2.cpp
+	rm -f fastFM2/ffm2.cpp
 
 .PHONY : clean
 clean:
 	rm -r fastFM-core2/_lib/
-	cd fastFM/
+	cd fastFM2/
 	rm -f *.so
 	rm -rf build/
-	rm -f fastFM/ffm2.cpp
+	rm -f fastFM2/ffm2.cpp

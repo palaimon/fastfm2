@@ -1,0 +1,6 @@
+FROM registry.gitlab.palaimon.io/fastfm/fastfm2:base
+
+# Install python reqs
+COPY requirements.txt src/requirements.txt
+COPY docker/scripts/install_pyreqs.sh ./scripts/install_pyreqs.sh
+RUN chmod a+x ./scripts/*.sh && ./scripts/install_pyreqs.sh

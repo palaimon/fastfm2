@@ -1,0 +1,24 @@
+FROM registry.gitlab.palaimon.io/fastfm/fastfm2:deps
+
+COPY ./fastFM-core2 src/fastFM-core2
+RUN pushd src/fastFM-core2                                              && \
+    cmake -H. -B_lib -DCMAKE_BUILD_TYPE=Release \
+                     -DCMAKE_DEBUG_POSTFIX=d    \
+                     -DEXTERNAL_RELEASE=1                               && \
+    cmake --build _lib --target fastFM                                  && \
+    popd
+
+COPY setup.py src/setup.py
+COPY version.py src/version.py
+COPY docker/scripts/compile_wheels.sh \
+     docker/scripts/run_tests.sh      \
+     ./scripts/
+
+COPY version.txt src/version.txt
+COPY ./fastFM2 src/fastFM2
+
+RUN chmod a+x ./scripts/*.sh
+
+RUN pip wheel --no-deps -w wheelhouse/ src/ && \
+    auditwheel repair wheelhouse/*.whl      && \
+    pip install --no-index --no-cache-dir --find-links=./wheelhouse fastFM2

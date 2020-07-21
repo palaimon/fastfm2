@@ -25,4 +25,4 @@ RUN make
 RUN poetry run python setup.py build_ext --inplace
 
 #ENTRYPOINT /bin/sh
-ENTRYPOINT poetry run pytest fastFM/tests -s -vvv
+ENTRYPOINT poetry run pytest fastFM2/tests -s -vvv

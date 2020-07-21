@@ -14,10 +14,10 @@ ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastFM-core2/_l
 
 
 ext_modules = [
-    Extension('ffm2', ['fastFM/ffm2.pyx'],
+    Extension('ffm2', ['fastFM2/ffm2.pyx'],
               libraries=['fastFM', 'solvers'],
               library_dirs=[ffm2_library_dir, ffm2_library_solvers_dir],
-              include_dirs=['fastFM/',
+              include_dirs=['fastFM2/',
                             ffm2_include_dir,
                             ffm2_solvers_iclude_dir,
                             numpy.get_include()],
@@ -28,13 +28,13 @@ ext_modules = [
 
 
 setup(
-    name='fastfm',
+    name='fastfm2',
     cmdclass={'build_ext': build_ext},
     ext_modules=ext_modules,
 
-    packages=['fastFM'],
+    packages=['fastFM2'],
 
-    package_data={'fastFM': ['fastFM/*.pxd']},
+    package_data={'fastFM2': ['fastFM2/*.pxd']},
 
     version=get_version_from_txt(),
     url='http://ibayer.github.io/fastFM',
