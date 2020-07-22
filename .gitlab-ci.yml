@@ -75,4 +75,4 @@ build_wheels_manual:
   artifacts:
     paths:
       - wheelhouse/*.whl
-    expire_in: 1 day
+    expire_in: 30 days
