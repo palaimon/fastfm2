@@ -1,7 +1,7 @@
 import os
 
 import numpy
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
@@ -14,10 +14,10 @@ ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastFM-core2/_l
 
 
 ext_modules = [
-    Extension('ffm2', ['fastFM2/ffm2.pyx'],
+    Extension('ffm2', ['fastfm2/ffm2.pyx'],
               libraries=['fastFM', 'solvers'],
               library_dirs=[ffm2_library_dir, ffm2_library_solvers_dir],
-              include_dirs=['fastFM2/',
+              include_dirs=['fastfm2/',
                             ffm2_include_dir,
                             ffm2_solvers_iclude_dir,
                             numpy.get_include()],
@@ -32,12 +32,12 @@ setup(
     cmdclass={'build_ext': build_ext},
     ext_modules=ext_modules,
 
-    packages=['fastFM2'],
+    packages=find_packages(),
 
-    package_data={'fastFM2': ['fastFM2/*.pxd']},
+    package_data={'fastfm2': ['fastfm2/*.pxd']},
 
     version=get_version_from_txt(),
-    url='http://ibayer.github.io/fastFM',
+    url='http://ibayer.github.io/fastfm',
     author='Immanuel Bayer',
     author_email='immanuel.bayer@uni-konstanz.de',
 

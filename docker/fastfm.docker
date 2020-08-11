@@ -15,7 +15,7 @@ COPY docker/scripts/compile_wheels.sh \
      ./scripts/
 
 COPY version.txt src/version.txt
-COPY ./fastFM2 src/fastFM2
+COPY ./fastfm2 src/fastfm2
 
 RUN chmod a+x ./scripts/*.sh
 

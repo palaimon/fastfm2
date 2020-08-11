@@ -3,8 +3,8 @@
 for PYBIN in /opt/python/*/bin;
 	do
       "${PYBIN}/pip" wheel --no-deps -w wheelhouse/ src/
-      "${PYBIN}/pip" install --no-index --no-cache-dir --find-links=./wheelhouse fastFM2
-      "${PYBIN}/python" -m pytest src/fastFM2
+      "${PYBIN}/pip" install --no-index --no-cache-dir --find-links=./wheelhouse fastfm2
+      "${PYBIN}/python" -m pytest src/fastfm2
 done
 
 for whl in wheelhouse/*.whl

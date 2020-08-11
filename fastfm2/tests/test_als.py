@@ -8,9 +8,9 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.utils.testing import assert_almost_equal
 
-from fastFM2 import als
-from fastFM2.datasets import make_user_item_regression
-from fastFM2.tests.test_base import no_als_classification_skip
+from fastfm2 import als
+from fastfm2.datasets import make_user_item_regression
+from fastfm2.tests.test_base import no_als_classification_skip
 
 
 @no_als_classification_skip
