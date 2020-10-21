@@ -38,13 +38,13 @@ if(NOT EXTERNAL_RELEASE)
         )
 endif()
 
-add_library(fastFM ${SOURCE_FILES} ${HEADER_FILES})
+add_library(fastfm ${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(Threads)
-target_link_libraries(fastFM ${CMAKE_THREAD_LIBS_INIT}) # For pthreads
-target_link_libraries(fastFM dl) # For ldl
+target_link_libraries(fastfm ${CMAKE_THREAD_LIBS_INIT}) # For pthreads
+target_link_libraries(fastfm dl) # For ldl
 
 # solvers
 add_subdirectory(solvers)
 include_directories(solvers)
-target_link_libraries(fastFM solvers)
+target_link_libraries(fastfm solvers)
