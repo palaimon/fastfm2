@@ -42,6 +42,6 @@ def check_update_current_version():
 
 
 if __name__ == "__main__":
-    print(get_version_from_txt())
-    print(get_version_from_pyproject())
+    print(f"Version check: v{get_version_from_txt()} "
+          f"-> v{get_version_from_pyproject()}")
     check_update_current_version()

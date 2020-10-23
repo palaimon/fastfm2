@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-project(fastFM)
+project(fastfm)
 
 include_directories(3rdparty/eigen)
 
@@ -16,8 +16,8 @@ endif()
 
 add_compile_definitions(EXTERNAL_RELEASE=${EXTERNAL_RELEASE})
 
-include_directories(fastFM)
-add_subdirectory(fastFM)
+include_directories(fastfm)
+add_subdirectory(fastfm)
 
 if(NOT EXTERNAL_RELEASE)
     include_directories(fastFM_app)

@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 import scipy.sparse as sp
 from sklearn import metrics
-from fastFM import als
+from fastfm2 import als
 
 
 def has_method(o, name):

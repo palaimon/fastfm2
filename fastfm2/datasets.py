@@ -48,7 +48,7 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.33, random_state=42)
 
-    from mcmc import FMRegression
+    from .mcmc import FMRegression
     fm = FMRegression(rank=2)
     y_pred = fm.fit_predict(sp.csc_matrix(X_train), y_train,
                             sp.csc_matrix(X_test))

@@ -5,6 +5,7 @@ services:
 stages:
   - build
   - test
+  - manual
 
 before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
@@ -12,17 +13,66 @@ before_script:
 variables:
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
-  IMG_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   DOCKER_DRIVER: overlay2
+  BASE_IMG_TAG: $CI_REGISTRY_IMAGE:base
+  DEPS_IMG_TAG: $CI_REGISTRY_IMAGE:deps
+  FASTFM_IMG_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
 
-build_test_imagee:
+build_deps_images:
   tags:
     - docker
   stage: build
   script:
-    - docker pull $IMG_TAG || true
-    - docker build --cache-from $IMG_TAG -t $IMG_TAG .
-    - docker run -i $IMG_TAG
-    - docker push $IMG_TAG
+    - docker pull $BASE_IMG_TAG || true
+    - docker build --cache-from $BASE_IMG_TAG -t $BASE_IMG_TAG -f docker/base.docker .
+    - docker push $BASE_IMG_TAG
+    - docker pull $DEPS_IMG_TAG || true
+    - docker build --cache-from $DEPS_IMG_TAG -t $DEPS_IMG_TAG -f docker/deps.docker .
+    - docker push $DEPS_IMG_TAG
+  only:
+    changes:
+      - requirements.txt
+      - docker/base.docker
+      - docker/deps.docker
 
+
+build_fastfm_image:
+  tags:
+    - docker
+  stage: build
+  script:
+    - docker pull $FASTFM_IMG_TAG || true
+    - >
+      docker build
+      --cache-from $FASTFM_IMG_TAG
+      -t $FASTFM_IMG_TAG
+      -f docker/fastfm.docker .
+    - docker push $FASTFM_IMG_TAG
+  after_script:  # remove dangling images and containers to avoid running out of disk space
+    - docker image ls #debug
+    - docker container ls #debug
+    - docker container prune -f || true
+    - docker image prune -f || true
+
+run_test:
+  tags:
+    - docker
+  stage: test
+  script:
+    - docker run -i --entrypoint ./scripts/run_tests.sh  $FASTFM_IMG_TAG
+
+build_wheels_manual:
+  tags:
+    - docker
+  stage: manual
+  when: manual
+  except:
+    refs:
+      - master
+  script:
+    - docker run -i --entrypoint ./scripts/compile_wheels.sh -v $(pwd)/wheelhouse:/wheelhouse $FASTFM_IMG_TAG
+  artifacts:
+    paths:
+      - wheelhouse/*.whl
+    expire_in: 30 days

@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "fastfm"
-version = "0.3.2"
+name = "fastfm2"
+version = "0.3.7"
 description = ""
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 scikit-learn = "^0.22.1"
 numpy = "^1.17"
 scipy = "^1.3"
