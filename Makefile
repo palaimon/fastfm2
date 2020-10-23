@@ -1,15 +1,13 @@
 PYTHON ?= python3
 
 all:
-	poetry run $(PYTHON) version.py
-	poetry install --no-root
+	$(PYTHON) version.py
 	( cd fastFM-core2 ; \
 	  cmake -H. -B_lib -DEXTERNAL_RELEASE=1 \
 	                   -DCMAKE_BUILD_TYPE=Release \
 	                   -DCMAKE_DEBUG_POSTFIX=d; \
 	  cmake --build _lib )
-	poetry run $(PYTHON) setup.py build_ext --inplace
-	poetry install
+	$(PYTHON) setup.py build_ext --inplace
 
 .PHONY : pyclean
 pyclean:
