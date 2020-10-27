@@ -11,7 +11,6 @@
 
 #include "fastfm.h"
 #include "fastfm_impl.h"
-#include "fastfm_internal.h"
 #include "solvers/solvers.h"
 #ifdef SGD
     #include "sgd.h"
@@ -45,7 +44,7 @@ Settings::~Settings() {
 }
 
 Model::Model() : mImpl(new Model::Impl()) {
-    mImpl->coef_ = new fm_coef();
+    mImpl->coef_ = new ModelMemory();
 }
 
 // Destructor

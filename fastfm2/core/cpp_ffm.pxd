@@ -6,7 +6,7 @@ from libcpp.string cimport string
 from libcpp cimport bool
 from libcpp.map cimport map as cpp_map
 
-cdef extern from "../fastFM-core2/fastfm/fastfm.h" namespace "fastfm":
+cdef extern from "../../fastFM-core2/fastfm/fastfm.h" namespace "fastfm":
 
     cdef cppclass Settings:
         Settings()

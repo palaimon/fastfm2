@@ -15,6 +15,7 @@
 #if !EXTERNAL_RELEASE
   #include "mcmc.h"
   #include "fm_utils.h"
+  #include "pre_release.h"
 #endif
 
 namespace fastfm {
@@ -99,19 +100,19 @@ void Predict(constSpMatRef x,
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef,
+                   SettingsConfig settings, ModelMemory* coef,
                    fit_callback_t cb, python_function_t python_func) {
     Vector y_pred;
     FitSquareLoss(x, y, cost, settings, coef, y_pred, cb, python_func);
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef) {
+                   SettingsConfig settings, ModelMemory* coef) {
     FitSquareLoss(x, y, cost, settings, coef, nullptr, nullptr);
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef, VectorRef res,
+                   SettingsConfig settings, ModelMemory* coef, VectorRef res,
                    fit_callback_t cb, python_function_t python_func) {
     const int n_samples = x.rows();
     const int n_features = x.cols();
@@ -248,14 +249,13 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
             }
         }
 
+        #if !EXTERNAL_RELEASE
         // Update Third Order Parameter
         for (int f = 0; third_order && f < coef->getw3().rows(); ++f) {
             Vector q_cache = Qcache(f, x, coef->getw3());
             Vector q2_cache = Q2Cache(f, x, coef->getw3());
             for (int j = 0; j < n_features; ++j) {
-                #if !EXTERNAL_RELEASE
                 if (is_mcmc) CHECK(false) << "3'rd order not supported by mcmc";
-                #endif
                 double chsqr = 0;
                 double che = 0;
                 const double w_old = coef->getw3().coeff(f, j);
@@ -265,6 +265,7 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
                 ThirdOrderErrAndQcacheUpdate(f, j, coef->getw3(), w_old, x, &err, &q_cache, &q2_cache);
             }
         }
+        #endif
 
         if (cb != nullptr && python_func != nullptr) {
             bool early_stop = false;
@@ -302,8 +303,8 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
     #endif
 }
 
+#if !EXTERNAL_RELEASE
 void logistic_error_weight(constVectorRef y, Vector* err, Vector* weight) {
-    #if !EXTERNAL_RELEASE
     const double epsilon = 1e-5;
     for (int i = 0; i < y.rows(); ++i) {
         const double p = utils::sigmoid(err->coeffRef(i));
@@ -316,8 +317,8 @@ void logistic_error_weight(constVectorRef y, Vector* err, Vector* weight) {
             err->coeffRef(i) = (y.coeffRef(i) - p) / (p * (1 - p));
         }
     }
-    #endif
 }
+#endif
 
 void FirstOrderStats(const int col, constVectorRef cost, constSpMatRef x,
                      constVectorRef err, double* chsqr, double* che) {
@@ -380,6 +381,7 @@ Vector Qcache(const int f, constSpMatRef x, constMatrixRef w) {
     return q_cache;
 }
 
+#if !EXTERNAL_RELEASE
 Vector Q2Cache(const int f, constSpMatRef x, constMatrixRef w) {
     Vector q_cache = Vector::Zero(x.rows());
     for (int k = 0; k < x.cols(); ++k) {
@@ -393,6 +395,7 @@ Vector Q2Cache(const int f, constSpMatRef x, constMatrixRef w) {
     }
     return q_cache;
 }
+#endif
 
 void FirstOrderErrUpdate(const int col, const double w_new, const double w_old,
                          constSpMatRef x, Vector* err) {
@@ -404,7 +407,6 @@ void FirstOrderErrUpdate(const int col, const double w_new, const double w_old,
     }
 }
 
-// TODO remove unused function
 void FirstOrderPredUpdate(const int col, const double w_new, const double w_old,
                           constSpMatRef x, Vector* y_pred) {
     for (constSpMatRef::InnerIterator it(x, col); it; ++it) {
@@ -431,8 +433,6 @@ void SecondOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRe
     }
 }
 
-//template <typename Derived>
-//Eigen::MatrixBase<Derived>&
 void SecondOrderPredAndQcacheUpdate(const int layer, const int col, constMatrixRef w2,
                                     const double w_old, constSpMatRef x,
                                     Vector* y_pred, Vector* q_cache) {
@@ -449,6 +449,7 @@ void SecondOrderPredAndQcacheUpdate(const int layer, const int col, constMatrixR
     }
 }
 
+#if !EXTERNAL_RELEASE
 void ThirdOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRef w,
                                   const double w_old, constSpMatRef x, Vector* err,
                                   Vector* q_cache, Vector* q_sqr_cache) {
@@ -470,7 +471,9 @@ void ThirdOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRef
         err->coeffRef(row) += (w_old - w_new) * h_i;
     }
 }
+#endif
 
+#if !EXTERNAL_RELEASE
 void ThirdOrderStats(const int layer, const int col, constVectorRef cost, constSpMatRef x, constMatrixRef w3,
                      constVectorRef err, constVectorRef q_cache, constVectorRef q_sqr_cache,
                      double* chsqr, double* che) {
@@ -493,6 +496,7 @@ void ThirdOrderStats(const int layer, const int col, constVectorRef cost, constS
         *che += cost_i * h_i * err.coeffRef(row);
     }
 }
+#endif
 
 }
 }

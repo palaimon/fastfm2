@@ -3,7 +3,6 @@
 
 #include "fastfm.h"
 #include "fastfm_decl.h"
-#include "fastfm_internal.h"
 
 namespace fastfm {
 
@@ -63,7 +62,7 @@ public:
         pm = new Model();
     }
 
-    explicit ModelFactory(fm_coef* pCoef)
+    explicit ModelFactory(ModelMemory* pCoef)
     {
         pm = new Model();
         Model::Impl* modelImpl = Internal::get_impl(pm);

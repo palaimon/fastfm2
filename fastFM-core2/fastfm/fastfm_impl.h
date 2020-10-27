@@ -5,8 +5,12 @@
 #ifndef FASTFM_FASTFM_IMPL_H
 #define FASTFM_FASTFM_IMPL_H
 
+#define LOGURU_REPLACE_GLOG 1
+#include "loguru.hpp"
+
 #include <random> // std::mt19937
 #include <memory>
+#include "fastfm.h"
 #include "fastfm_decl.h"
 
 #include <unordered_set>
@@ -18,9 +22,7 @@
 
 namespace fastfm {
 
-
-
-struct fm_settings {
+struct SettingsConfig {
 
     std::string loss = "<empty>";
     std::string solver = "<empty>";
@@ -55,14 +57,96 @@ struct fm_settings {
     bool clip_pred = true;
     bool clip_reg = true;
     bool lazy_reg = true;
+
+    // Map struct fields to str names
+    template<typename This, typename Visitor>
+    static void accept(This t, Visitor v) {
+        v->visit(t->loss, "loss");
+        v->visit(t->solver, "solver");
+
+        v->visit(t->iter, "iter");
+        v->visit(t->rng_seed, "rng_seed");
+
+        v->visit(t->zero_order, "zero_order");
+        v->visit(t->first_order, "first_order");
+
+        v->visit(t->rank_w2, "rank_w2");
+        v->visit(t->rank_w3, "rank_w3");
+
+        v->visit(t->l2_reg_w0, "l2_reg_w0");
+        v->visit(t->l2_reg_w1, "l2_reg_w1");
+        v->visit(t->l2_reg_w2, "l2_reg_w2");
+        v->visit(t->l2_reg_w3, "l2_reg_w3");
+
+        v->visit(t->impl_reg, "impl_reg");
+        v->visit(t->first_order_impl_reg, "first_order_impl_reg");
+
+        v->visit(t->group_l2_reg_w2, "group_l2_reg_w2");
+
+        v->visit(t->init_var_w2, "init_var_w2");
+        v->visit(t->init_var_w3, "init_var_w3");
+
+        v->visit(t->step_size, "step_size");
+        v->visit(t->decay, "decay");
+        v->visit(t->lazy_decay, "lazy_decay");
+        v->visit(t->n_epoch, "n_epoch");
+        v->visit(t->clip_pred, "clip_pred");
+        v->visit(t->clip_reg, "clip_reg");
+        v->visit(t->lazy_reg, "lazy_reg");
+    }
 };
+
+// define str2anytype assignments
+struct map2structer {
+    explicit map2structer(std::map<std::string, std::string> map) : m(std::move(map)) {}
+
+    void visit(int& v, const char* name) {
+        auto item = m.find(name);
+        if (item != m.end()) {
+            v = std::stoi(item->second);
+        }
+    }
+
+    void visit(double& v, const char* name) {
+        auto item = m.find(name);
+        if (item != m.end()) {
+            v = std::stod(item->second);
+        }
+    }
+
+    void visit(std::string& v, const char* name) {
+        auto item = m.find(name);
+        if (item != m.end()) {
+            v = item->second;
+        }
+    }
+
+    void visit(bool& v, const char* name) {
+        auto item = m.find(name);
+        if (item != m.end()) {
+            std::istringstream(item->second) >> std::boolalpha >> v;
+        }
+    }
+
+    static void visit(std::vector<double>& v, const char* name) {
+        LOG(ERROR) << "Update of parameter " << name << " is not supported!";
+    }
+
+    template<typename T>
+    void visit(T& v, const char* name) {
+        T::accept(&v, this);
+    }
+
+    std::map<std::string, std::string> m;
+};
+
 
 class Evaluator {
     public:
     virtual void eval() = 0;
 };
 
-class fm_coef {
+class ModelMemory {
 private:
     double w0 = 0;
     double *w0map;
@@ -79,11 +163,12 @@ private:
     Vector dummy;
 
 public:
-    fm_coef() : w0map(NULL), w1map(NULL), w2map(NULL), w3map(NULL), mapValues(NULL) {
+    ModelMemory() : w0map(NULL), w1map(NULL), w2map(NULL), w3map(NULL), mapValues(NULL) {
     }
 
-    fm_coef(const fm_settings& settings, const int n_features) : w0map(NULL), w1map(NULL),
-                                                                 w2map(NULL), w3map(NULL), mapValues(NULL) {
+    ModelMemory(const SettingsConfig& settings, const int n_features) : w0map(NULL), w1map(NULL),
+                                                                        w2map(NULL), w3map(NULL),
+                                                                        mapValues(NULL) {
         std::mt19937 mt_rand(settings.rng_seed);
 
         w0 = 0;
@@ -269,6 +354,175 @@ public:
 
     bool has_vector(const std::string& name) const{
         return vectors.count(name) > 0;
+    }
+};
+
+class Data::Impl{
+ private:
+    Eigen::Map<Vector> y_train;
+    Eigen::Map<Vector> y_pred;
+    Eigen::Map<Matrix> y_recs;
+
+    std::unordered_map<std::string, Eigen::Map<SpMat>> x_;
+    std::unordered_map<std::string, Eigen::Map<RowSpMat>> x_row_;
+    std::unordered_map<std::string, Eigen::Map<Vector>> vectors;
+    Vector dummy;
+
+ public:
+    bool has_col_major() const {
+        return x_.size() > 0;
+    }
+
+    bool is_ranking() const {
+        return y_recs.size() > 0;
+    }
+
+    bool check_row_major_train(){
+            CHECK_GT(x_row_.size(), 0);
+            CHECK_EQ(x_row_.at("x").rows(), y_train.size());
+        return true;
+    }
+
+    bool check_icd_train(){
+            CHECK_EQ(x_.size(), 3);
+            CHECK_EQ(x_.at("x").rows(), y_train.size());
+            CHECK_EQ(x_.at("x").cols(), x_.at("x_c").cols() + x_.at("x_i").cols());
+        return true;
+    }
+
+    bool check_col_major_train(){
+            CHECK_GT(x_.size(), 0);
+            CHECK_EQ(x_.at("x").rows(), y_train.size());
+        return true;
+    }
+
+    Eigen::Map<Vector> get_train_target() const
+    {
+        return y_train;
+    }
+    void wrap_train_target_memory(double* data, int n_samples)
+    {
+        // C++ placement operator. Does not allocate memory, but runs the constructor of the class on the memory pointer provided.
+        new (&y_train) Eigen::Map<Vector>(data, n_samples);
+    }
+
+    Eigen::Map<Vector> get_prediction() const
+    {
+        return y_pred;
+    }
+
+    Eigen::Map<Matrix> get_recs() const
+    {
+        return y_recs;
+    }
+
+    void wrap_pred_memory(double* data, int n_samples)
+    {
+        // C++ placement operator. Does not allocate memory, but runs the constructor of the class on the memory pointer provided.
+        new (&y_pred) Eigen::Map<Vector>(data, n_samples);
+    }
+    void wrap_pred_memory(double* data, const int n_rows, const int n_cols)
+    {
+        // C++ placement operator. Does not allocate memory, but runs the constructor of the class on the memory pointer provided.
+        new (&y_recs) Eigen::Map<Matrix>(data, n_rows, n_cols);
+    }
+
+    int wrap_design_matrix_col_major(const std::string& name, double* data, int n_samples, int n_features, int nnz,
+                                     int* outer, int* inner)
+    {
+        auto res = x_.emplace(name, Eigen::Map<SpMat>(n_samples, n_features, nnz, outer, inner, data));
+        CHECK(res.second);
+        return x_.size();
+    }
+
+    int wrap_design_matrix_row_major(const std::string& name, double* data, int n_samples, int n_features, int nnz,
+                                     int* outer, int* inner)
+    {
+        auto res = x_row_.emplace(name, Eigen::Map<RowSpMat>(n_samples, n_features, nnz, outer, inner, data));
+        CHECK(res.second);
+        return x_row_.size();
+    }
+
+    Eigen::Map<SpMat> get_design_matrix_col_major() const
+    {
+        return x_.at("x");
+    }
+
+    Eigen::Map<RowSpMat> get_design_matrix_row_major() const
+    {
+        return x_row_.at("x");
+    }
+
+    Eigen::Map<SpMat> get_design_matrix_context_col_major() const
+    {
+        return x_.at("x_c");
+    }
+
+    Eigen::Map<RowSpMat> get_design_matrix_context_row_major() const
+    {
+        return x_row_.at("x_c");
+    }
+
+    Eigen::Map<SpMat> get_design_matrix_item_col_major() const
+    {
+        return x_.at("x_i");
+    }
+
+    Eigen::Map<RowSpMat> get_design_matrix_item_row_major() const
+    {
+        return x_row_.at("x_i");
+    }
+
+    void add_vector(const std::string& name, double* data, size_t size) {
+        // Store only unique keys
+        auto res = vectors.emplace(name, Eigen::Map<Vector>(data, size));
+        // Check if construction was successful
+        CHECK(res.second);
+    }
+
+    VectorRef get_vector(const std::string& name) {
+        if (has_vector(name)) {
+            return vectors.at(name);
+        } else {
+            return dummy;
+        }
+    }
+
+    bool has_vector(const std::string& name) const{
+        return vectors.count(name) > 0;
+    }
+
+    Impl() : y_train(NULL, 0), y_pred(NULL, 0), y_recs(NULL, 0, 0) {}
+};
+
+class Settings::Impl{
+ public:
+    SettingsConfig settings_;
+
+    Impl() = default;
+
+    explicit Impl(const std::map<std::string, std::string>& settings_map)
+    {
+        map2structer fm_visitor(settings_map);
+        fm_visitor.visit(settings_, "");
+    }
+};
+
+class Model::Impl{
+ public:
+    ModelMemory* coef_;
+};
+
+class Internal{
+ public:
+    static Model::Impl* get_impl(Model* m){
+        return m->mImpl;
+    }
+    static Settings::Impl* get_impl(Settings* s){
+        return s->mImpl;
+    }
+    static Data::Impl* get_impl(Data* d){
+        return d->mImpl;
     }
 };
 

@@ -19,10 +19,12 @@ TEST_CASE("Settings deserialization", "[deserialization]") {
 
     std::map<std::string, std::string> cppjson =
       {
+              {"loss", "losser"},
+              {"solver", "solve"},
               {"iter", "1000"},
               {"rng_seed", "567"},
               {"zero_order", "false"},
-              {"first_order", "false"},
+              {"first_order", "true"},
               {"l2_reg_w0", "0.10"},
               {"l2_reg_w1", "10.1"},
               {"l2_reg_w2", "20.2"},
@@ -32,17 +34,19 @@ TEST_CASE("Settings deserialization", "[deserialization]") {
               {"step_size", "0.001"},
               {"decay", "0.002"},
               {"lazy_decay", "0.003"},
+              {"n_epoch", "555"},
               {"clip_pred", "false"},
-              {"clip_reg", "false"},
+              {"clip_reg", "true"},
               {"lazy_reg", "false"}
       };
 
     Settings* s = new Settings(cppjson);
-
+    REQUIRE (Internal::get_impl(s)->settings_.solver == "solve");
+    REQUIRE(Internal::get_impl(s)->settings_.loss == "losser");
     REQUIRE(Internal::get_impl(s)->settings_.iter == 1000);
     REQUIRE(Internal::get_impl(s)->settings_.rng_seed == 567);
     REQUIRE_FALSE(Internal::get_impl(s)->settings_.zero_order);
-    REQUIRE_FALSE(Internal::get_impl(s)->settings_.first_order);
+    REQUIRE(Internal::get_impl(s)->settings_.first_order);
     REQUIRE(Approx(Internal::get_impl(s)->settings_.l2_reg_w0) == 0.1);
     REQUIRE(Approx(Internal::get_impl(s)->settings_.l2_reg_w1) == 10.1);
     REQUIRE(Approx(Internal::get_impl(s)->settings_.l2_reg_w2) == 20.2);
@@ -52,8 +56,9 @@ TEST_CASE("Settings deserialization", "[deserialization]") {
     REQUIRE(Approx(Internal::get_impl(s)->settings_.step_size) == 0.001);
     REQUIRE(Approx(Internal::get_impl(s)->settings_.decay) == 0.002);
     REQUIRE(Approx(Internal::get_impl(s)->settings_.lazy_decay) == 0.003);
+    REQUIRE(Internal::get_impl(s)->settings_.n_epoch == 555);
     REQUIRE_FALSE(Internal::get_impl(s)->settings_.clip_pred);
-    REQUIRE_FALSE(Internal::get_impl(s)->settings_.clip_reg);
+    REQUIRE(Internal::get_impl(s)->settings_.clip_reg);
     REQUIRE_FALSE(Internal::get_impl(s)->settings_.lazy_reg);
 
     delete s;
@@ -119,7 +124,7 @@ TEST_CASE("Add parameter to Model", "[add_parameter]") {
 
 TEST_CASE("Default Settings", "[default_settings]") {
     Settings* s = new Settings();
-    fm_settings default_;
+    SettingsConfig default_;
     REQUIRE(Approx(Internal::get_impl(s)->settings_.init_var_w2) == default_.init_var_w2);
 
     // delete settings

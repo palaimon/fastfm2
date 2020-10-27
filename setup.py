@@ -4,6 +4,7 @@ import numpy
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 
 from version import get_version_from_txt
 
@@ -13,18 +14,20 @@ ffm2_library_dir = os.getenv("FFM_LIBRARY_DIR", 'fastFM-core2/_lib/fastfm/')
 ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastFM-core2/_lib/fastfm/solvers')
 
 
-ext_modules = [
-    Extension('ffm2', ['fastfm2/ffm2.pyx'],
+ext_modules = cythonize([
+    Extension('ffm2', ['fastfm2/core/ffm2.pyx'],
               libraries=['fastfm', 'solvers'],
               library_dirs=[ffm2_library_dir, ffm2_library_solvers_dir],
-              include_dirs=['fastfm2/',
+              include_dirs=['fastfm2/core',
                             ffm2_include_dir,
                             ffm2_solvers_include_dir,
                             numpy.get_include()],
-              extra_compile_args=['-std=c++11', '-Wall', '-pedantic'],
+              extra_compile_args=['-std=c++11', '-Wall'],
               extra_link_args=['-std=c++11', '-mstackrealign'],
               language="c++",
-              cython_directives = {'language_level': "3"})]
+              cython_directives = {'language_level': "3"})],
+    compile_time_env=dict(EXTERNAL_RELEASE=True)
+)
 
 
 setup(
@@ -34,7 +37,7 @@ setup(
 
     packages=find_packages(),
 
-    package_data={'fastfm2': ['fastfm2/*.pxd']},
+    package_data={'fastfm2': ['fastfm2/core/*.pxd']},
 
     version=get_version_from_txt(),
     url='http://ibayer.github.io/fastFM',
@@ -61,8 +64,7 @@ setup(
         'Operating System :: Unix',
 
         'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.5',
-        # 'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
     ],
