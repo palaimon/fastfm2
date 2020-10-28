@@ -25,15 +25,15 @@ void Predict(constSpMatRef x,
              VectorRef res);
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   SettingsConfig settings, ModelMemory* coef, VectorRef res,
+                   SolverSettings settings, ModelParam* coef, VectorRef res,
                    fit_callback_t cb, python_function_t python_func);
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   SettingsConfig settings, ModelMemory* coef,
+                   SolverSettings settings, ModelParam* coef,
                    fit_callback_t cb, python_function_t python_func);
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   SettingsConfig settings, ModelMemory* coef);
+                   SolverSettings settings, ModelParam* coef);
 
 void FirstOrderStats(const int col, constVectorRef cost, constSpMatRef x,
                      constVectorRef err, double* chsqr, double* che);

@@ -44,7 +44,7 @@ Settings::~Settings() {
 }
 
 Model::Model() : mImpl(new Model::Impl()) {
-    mImpl->coef_ = new ModelMemory();
+    mImpl->coef_ = new ModelParam();
 }
 
 // Destructor

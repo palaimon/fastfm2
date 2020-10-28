@@ -62,7 +62,7 @@ public:
         pm = new Model();
     }
 
-    explicit ModelFactory(ModelMemory* pCoef)
+    explicit ModelFactory(ModelParam* pCoef)
     {
         pm = new Model();
         Model::Impl* modelImpl = Internal::get_impl(pm);

@@ -17,8 +17,8 @@
         ],
         "include_dirs": [
             "fastfm2/core",
-            "fastFM-core2/fastfm/",
-            "fastFM-core2/fastfm/solvers/",
+            "fastfm-core2/fastfm/",
+            "fastfm-core2/fastfm/solvers/",
             "/Users/alexjoz/Dev/____TEST____/fastfm2/.venv/lib/python3.8/site-packages/numpy/core/include"
         ],
         "language": "c++",
@@ -27,8 +27,8 @@
             "solvers"
         ],
         "library_dirs": [
-            "fastFM-core2/_lib/fastfm/",
-            "fastFM-core2/_lib/fastfm/solvers"
+            "fastfm-core2/_lib/fastfm/",
+            "fastfm-core2/_lib/fastfm/solvers"
         ],
         "name": "ffm2",
         "sources": [
@@ -677,7 +677,7 @@ static CYTHON_INLINE float __PYX_NAN() {
     #endif
     
 #include <map>
-#include "../../fastFM-core2/fastfm/fastfm.h"
+#include "../../fastfm-core2/fastfm/fastfm.h"
 #include <stdio.h>
 #include "numpy/arrayobject.h"
 #include "numpy/ufuncobject.h"

@@ -22,7 +22,7 @@
 
 namespace fastfm {
 
-struct SettingsConfig {
+struct SolverSettings {
 
     std::string loss = "<empty>";
     std::string solver = "<empty>";
@@ -57,96 +57,14 @@ struct SettingsConfig {
     bool clip_pred = true;
     bool clip_reg = true;
     bool lazy_reg = true;
-
-    // Map struct fields to str names
-    template<typename This, typename Visitor>
-    static void accept(This t, Visitor v) {
-        v->visit(t->loss, "loss");
-        v->visit(t->solver, "solver");
-
-        v->visit(t->iter, "iter");
-        v->visit(t->rng_seed, "rng_seed");
-
-        v->visit(t->zero_order, "zero_order");
-        v->visit(t->first_order, "first_order");
-
-        v->visit(t->rank_w2, "rank_w2");
-        v->visit(t->rank_w3, "rank_w3");
-
-        v->visit(t->l2_reg_w0, "l2_reg_w0");
-        v->visit(t->l2_reg_w1, "l2_reg_w1");
-        v->visit(t->l2_reg_w2, "l2_reg_w2");
-        v->visit(t->l2_reg_w3, "l2_reg_w3");
-
-        v->visit(t->impl_reg, "impl_reg");
-        v->visit(t->first_order_impl_reg, "first_order_impl_reg");
-
-        v->visit(t->group_l2_reg_w2, "group_l2_reg_w2");
-
-        v->visit(t->init_var_w2, "init_var_w2");
-        v->visit(t->init_var_w3, "init_var_w3");
-
-        v->visit(t->step_size, "step_size");
-        v->visit(t->decay, "decay");
-        v->visit(t->lazy_decay, "lazy_decay");
-        v->visit(t->n_epoch, "n_epoch");
-        v->visit(t->clip_pred, "clip_pred");
-        v->visit(t->clip_reg, "clip_reg");
-        v->visit(t->lazy_reg, "lazy_reg");
-    }
 };
-
-// define str2anytype assignments
-struct map2structer {
-    explicit map2structer(std::map<std::string, std::string> map) : m(std::move(map)) {}
-
-    void visit(int& v, const char* name) {
-        auto item = m.find(name);
-        if (item != m.end()) {
-            v = std::stoi(item->second);
-        }
-    }
-
-    void visit(double& v, const char* name) {
-        auto item = m.find(name);
-        if (item != m.end()) {
-            v = std::stod(item->second);
-        }
-    }
-
-    void visit(std::string& v, const char* name) {
-        auto item = m.find(name);
-        if (item != m.end()) {
-            v = item->second;
-        }
-    }
-
-    void visit(bool& v, const char* name) {
-        auto item = m.find(name);
-        if (item != m.end()) {
-            std::istringstream(item->second) >> std::boolalpha >> v;
-        }
-    }
-
-    static void visit(std::vector<double>& v, const char* name) {
-        LOG(ERROR) << "Update of parameter " << name << " is not supported!";
-    }
-
-    template<typename T>
-    void visit(T& v, const char* name) {
-        T::accept(&v, this);
-    }
-
-    std::map<std::string, std::string> m;
-};
-
 
 class Evaluator {
     public:
     virtual void eval() = 0;
 };
 
-class ModelMemory {
+class ModelParam {
 private:
     double w0 = 0;
     double *w0map;
@@ -163,12 +81,12 @@ private:
     Vector dummy;
 
 public:
-    ModelMemory() : w0map(NULL), w1map(NULL), w2map(NULL), w3map(NULL), mapValues(NULL) {
+    ModelParam() : w0map(NULL), w1map(NULL), w2map(NULL), w3map(NULL), mapValues(NULL) {
     }
 
-    ModelMemory(const SettingsConfig& settings, const int n_features) : w0map(NULL), w1map(NULL),
-                                                                        w2map(NULL), w3map(NULL),
-                                                                        mapValues(NULL) {
+    ModelParam(const SolverSettings& settings, const int n_features) : w0map(NULL), w1map(NULL),
+                                                                       w2map(NULL), w3map(NULL),
+                                                                       mapValues(NULL) {
         std::mt19937 mt_rand(settings.rng_seed);
 
         w0 = 0;
@@ -497,20 +415,87 @@ class Data::Impl{
 
 class Settings::Impl{
  public:
-    SettingsConfig settings_;
+    SolverSettings settings_;
 
     Impl() = default;
 
     explicit Impl(const std::map<std::string, std::string>& settings_map)
     {
-        map2structer fm_visitor(settings_map);
-        fm_visitor.visit(settings_, "");
+        for (const auto& item : settings_map) {
+            if (item.first == "solver"){
+                settings_.solver = item.second;
+            }
+            else if (item.first == "loss"){
+                settings_.loss = item.second;
+            }
+//
+            else if (item.first == "iter"){
+                settings_.iter = std::stoi(item.second);
+            }
+            else if (item.first == "rng_seed"){
+                settings_.rng_seed = std::stoi(item.second);
+            }
+//
+            else if (item.first == "zero_order"){
+                std::istringstream(item.second) >> std::boolalpha >> settings_.zero_order;
+            }
+            else if (item.first == "first_order"){
+                std::istringstream(item.second) >> std::boolalpha >> settings_.first_order;
+            }
+//
+            else if (item.first == "l2_reg_w0"){
+                settings_.l2_reg_w0 = std::stod(item.second);
+            }
+            else if (item.first == "l2_reg_w1"){
+                settings_.l2_reg_w1 = std::stod(item.second);
+            }
+            else if (item.first == "l2_reg_w2"){
+                settings_.l2_reg_w2 = std::stod(item.second);
+            }
+            else if (item.first == "l2_reg_w3"){
+                settings_.l2_reg_w3 = std::stod(item.second);
+            }
+//
+            else if (item.first == "init_var_w2"){
+                settings_.init_var_w2 = std::stod(item.second);
+            }
+            else if (item.first == "init_var_w3"){
+                settings_.init_var_w3 = std::stod(item.second);
+            }
+//
+            //sgd
+            else if (item.first == "step_size"){
+                settings_.step_size = std::stod(item.second);
+            }
+            else if (item.first == "decay"){
+                settings_.decay = std::stod(item.second);
+            }
+            else if (item.first == "lazy_decay"){
+                settings_.lazy_decay = std::stod(item.second);
+            }
+            else if (item.first == "n_epoch"){
+                settings_.n_epoch = std::stoi(item.second);
+            }
+            else if (item.first == "clip_pred"){
+                std::istringstream(item.second) >> std::boolalpha >> settings_.clip_pred;
+            }
+            else if (item.first == "clip_reg"){
+                std::istringstream(item.second) >> std::boolalpha >> settings_.clip_reg;
+            }
+            else if (item.first == "lazy_reg"){
+                std::istringstream(item.second) >> std::boolalpha >> settings_.lazy_reg;
+            }
+            else {
+                    LOG(ERROR) << "Parameter " << item.first << " is not supported.";
+                CHECK(false);
+            }
+        }
     }
 };
 
 class Model::Impl{
  public:
-    ModelMemory* coef_;
+    ModelParam* coef_;
 };
 
 class Internal{

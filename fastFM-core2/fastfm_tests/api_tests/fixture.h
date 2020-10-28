@@ -83,8 +83,8 @@ protected:
     Matrix w2_;
     Vector w1_;
     double w0_;
-    ModelMemory coef_;
-    SettingsConfig settings_;
+    ModelParam coef_;
+    SolverSettings settings_;
     Data* pd_;
     Model* pm_;
     Settings* ps_;
@@ -241,11 +241,11 @@ protected:
     Vector w1_i_;
 
     double w0_;
-    ModelMemory coef_;
-    SettingsConfig settings_;
+    ModelParam coef_;
+    SolverSettings settings_;
 
-    ModelMemory coef_naive;
-    SettingsConfig settings_naive_;
+    ModelParam coef_naive;
+    SolverSettings settings_naive_;
 
     const std::vector<double> v_empty_;
 

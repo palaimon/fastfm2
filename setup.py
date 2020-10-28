@@ -8,10 +8,10 @@ from Cython.Build import cythonize
 
 from version import get_version_from_txt
 
-ffm2_include_dir = os.getenv("FFM_INCLUDE_DIR", 'fastFM-core2/fastfm/')
-ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR", 'fastFM-core2/fastfm/solvers/')
-ffm2_library_dir = os.getenv("FFM_LIBRARY_DIR", 'fastFM-core2/_lib/fastfm/')
-ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastFM-core2/_lib/fastfm/solvers')
+ffm2_include_dir = os.getenv("FFM_INCLUDE_DIR", 'fastfm-core2/fastfm/')
+ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR", 'fastfm-core2/fastfm/solvers/')
+ffm2_library_dir = os.getenv("FFM_LIBRARY_DIR", 'fastfm-core2/_lib/fastfm/')
+ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastfm-core2/_lib/fastfm/solvers')
 
 
 ext_modules = cythonize([
