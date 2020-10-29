@@ -1,12 +1,14 @@
 FROM registry.gitlab.palaimon.io/fastfm/fastfm2:deps
 
-COPY ./fastFM-core2 src/fastFM-core2
-RUN pushd src/fastFM-core2                                              && \
+COPY ./fastfm-core2 src/fastfm-core2
+RUN pushd src/fastfm-core2                                              && \
     cmake -H. -B_lib -DCMAKE_BUILD_TYPE=Release \
                      -DCMAKE_DEBUG_POSTFIX=d    \
                      -DEXTERNAL_RELEASE=1                               && \
-    cmake --build _lib --target fastfm                                  && \
+    cmake --build _lib                                                  && \
     popd
+
+RUN ./src/fastfm-core2/_lib/fastfm_tests/api_tests/runApiTestsCatch
 
 COPY setup.py src/setup.py
 COPY version.py src/version.py

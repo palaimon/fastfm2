@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "fastfm2"
-version = "0.3.7"
+version = "0.3.9"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["palaimon.io <oss@mail.palaimon.io>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"

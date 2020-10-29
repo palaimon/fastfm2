@@ -61,40 +61,6 @@ cdef _add_sparse_matrix(name, Data* d, X):
                         &outer[0], &inner[0], sp.isspmatrix_csc(X))
 
 
-def ffm_top_k_retrieval(np.ndarray[np.float64_t, ndim = 1] w_0,
-                        np.ndarray[np.float64_t, ndim = 1] w,
-                        np.ndarray[np.float64_t, ndim = 2] V,
-                        C, I, top_k):
-    assert top_k <= I.shape[0], "top_k can't be larger then number of items"
-    n_features = len(w)
-    n_context = C.shape[0]
-    assert n_features == V.shape[1]
-    assert C.shape[1] + I.shape[1] == n_features
-
-    # allocate memory for predictions
-    n_samples = n_context * top_k
-    cdef np.ndarray[np.float64_t, ndim=2, mode='c'] y =\
-         np.zeros((n_samples, 2), dtype=np.float64)
-
-    m = _model_factory(w_0, w, V)
-
-    cdef Data *d = new Data()
-    _add_sparse_matrix("x_c", d, C)
-    _add_sparse_matrix("x_i", d, I)
-    d.add_matrix(to_c_str("y_rec"),
-                 <double *> y.data, y.shape[0], y.shape[1], True)
-
-    cpp_ffm.predict(m, d)
-
-    del m
-    del d
-
-    pos = y[:, 0].reshape((int(y.shape[0] / top_k), top_k)).astype(int)
-    scores = y[:, 1].reshape((int(y.shape[0] / top_k), top_k))
-
-    return pos, scores
-
-
 def ffm_predict(np.ndarray[np.float64_t, ndim = 1] w_0,
         np.ndarray[np.float64_t, ndim = 1] w,
         np.ndarray[np.float64_t, ndim = 2] V, X):
@@ -235,3 +201,6 @@ def ffm_fit(np.ndarray[np.float64_t, ndim = 1] w_0,
     del s
 
     return w_0, w, V
+
+IF not EXTERNAL_RELEASE:
+    include "pre_release.pxi"

@@ -20,9 +20,10 @@ include_directories(fastfm)
 add_subdirectory(fastfm)
 
 if(NOT EXTERNAL_RELEASE)
-    include_directories(fastFM_app)
-    add_subdirectory(fastFM_app)
+    include_directories(fastfm_app)
+    add_subdirectory(fastfm_app)
 endif()
 
 enable_testing()
-add_subdirectory(fastFM_tests_catch)
+add_subdirectory(fastfm_tests)
+include_directories(fastfm_tests)

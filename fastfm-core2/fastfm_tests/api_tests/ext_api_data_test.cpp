@@ -119,7 +119,7 @@ TEST_CASE("Add parameter to Model", "[add_parameter]") {
 
 TEST_CASE("Default Settings", "[default_settings]") {
     Settings* s = new Settings();
-    fm_settings default_;
+    SolverSettings default_;
     REQUIRE(Approx(Internal::get_impl(s)->settings_.init_var_w2) == default_.init_var_w2);
 
     // delete settings

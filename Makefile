@@ -2,7 +2,7 @@ PYTHON ?= python3
 
 all:
 	$(PYTHON) version.py
-	( cd fastFM-core2 ; \
+	( cd fastfm-core2 ; \
 	  cmake -H. -B_lib -DEXTERNAL_RELEASE=1 \
 	                   -DCMAKE_BUILD_TYPE=Release \
 	                   -DCMAKE_DEBUG_POSTFIX=d; \
@@ -11,14 +11,12 @@ all:
 
 .PHONY : pyclean
 pyclean:
-	cd fastfm2/
 	rm -f *.so
-	rm -f fastfm2/ffm2.cpp
+	rm -f fastfm2/core/ffm2.cpp
 
 .PHONY : clean
 clean:
-	rm -r fastFM-core2/_lib/
-	cd fastfm2/
+	rm -rf fastfm-core2/_lib/
 	rm -f *.so
 	rm -rf build/
-	rm -f fastfm2/ffm2.cpp
+	rm -f fastfm2/core/ffm2.cpp

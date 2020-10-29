@@ -7,6 +7,8 @@ SET(solvers_SRC
 
 if(NOT EXTERNAL_RELEASE)
     list(APPEND solvers_SRC
+            pre_release.h
+            pre_release.cpp
             mcmc.h
             fm_utils.h
             fm_utils.cpp

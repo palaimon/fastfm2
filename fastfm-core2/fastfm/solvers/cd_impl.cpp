@@ -15,6 +15,7 @@
 #if !EXTERNAL_RELEASE
   #include "mcmc.h"
   #include "fm_utils.h"
+  #include "pre_release.h"
 #endif
 
 namespace fastfm {
@@ -99,19 +100,19 @@ void Predict(constSpMatRef x,
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef,
+                   SolverSettings settings, ModelParam* coef,
                    fit_callback_t cb, python_function_t python_func) {
     Vector y_pred;
     FitSquareLoss(x, y, cost, settings, coef, y_pred, cb, python_func);
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef) {
+                   SolverSettings settings, ModelParam* coef) {
     FitSquareLoss(x, y, cost, settings, coef, nullptr, nullptr);
 }
 
 void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
-                   fm_settings settings, fm_coef* coef, VectorRef res,
+                   SolverSettings settings, ModelParam* coef, VectorRef res,
                    fit_callback_t cb, python_function_t python_func) {
     const int n_samples = x.rows();
     const int n_features = x.cols();
@@ -248,14 +249,13 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
             }
         }
 
+        #if !EXTERNAL_RELEASE
         // Update Third Order Parameter
         for (int f = 0; third_order && f < coef->getw3().rows(); ++f) {
             Vector q_cache = Qcache(f, x, coef->getw3());
             Vector q2_cache = Q2Cache(f, x, coef->getw3());
             for (int j = 0; j < n_features; ++j) {
-                #if !EXTERNAL_RELEASE
                 if (is_mcmc) CHECK(false) << "3'rd order not supported by mcmc";
-                #endif
                 double chsqr = 0;
                 double che = 0;
                 const double w_old = coef->getw3().coeff(f, j);
@@ -265,6 +265,7 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
                 ThirdOrderErrAndQcacheUpdate(f, j, coef->getw3(), w_old, x, &err, &q_cache, &q2_cache);
             }
         }
+        #endif
 
         if (cb != nullptr && python_func != nullptr) {
             bool early_stop = false;
@@ -298,23 +299,6 @@ void FitSquareLoss(constSpMatRef x, constVectorRef y, constVectorRef cost,
             Predict(x, coef->getw2(), coef->getw1(), coef->getw0(), err);
         }
         utils::streaming_mean(i, err, res);
-    }
-    #endif
-}
-
-void logistic_error_weight(constVectorRef y, Vector* err, Vector* weight) {
-    #if !EXTERNAL_RELEASE
-    const double epsilon = 1e-5;
-    for (int i = 0; i < y.rows(); ++i) {
-        const double p = utils::sigmoid(err->coeffRef(i));
-
-        if ((p < epsilon) | (1 - p < epsilon)) {
-            weight->coeffRef(i) = epsilon;
-            err->coeffRef(i) = 0;
-        } else {
-            weight->coeffRef(i) = (p * (1 - p));
-            err->coeffRef(i) = (y.coeffRef(i) - p) / (p * (1 - p));
-        }
     }
     #endif
 }
@@ -380,19 +364,6 @@ Vector Qcache(const int f, constSpMatRef x, constMatrixRef w) {
     return q_cache;
 }
 
-Vector Q2Cache(const int f, constSpMatRef x, constMatrixRef w) {
-    Vector q_cache = Vector::Zero(x.rows());
-    for (int k = 0; k < x.cols(); ++k) {
-        for (constSpMatRef::InnerIterator it(x, k); it; ++it) {
-            const double x_kl = it.value();
-            const double w_fk = w.coeffRef(f, k);
-            const int row = it.row();   // row index
-
-            q_cache.coeffRef(row) += w_fk * w_fk * x_kl * x_kl;
-        }
-    }
-    return q_cache;
-}
 
 void FirstOrderErrUpdate(const int col, const double w_new, const double w_old,
                          constSpMatRef x, Vector* err) {
@@ -404,7 +375,6 @@ void FirstOrderErrUpdate(const int col, const double w_new, const double w_old,
     }
 }
 
-// TODO remove unused function
 void FirstOrderPredUpdate(const int col, const double w_new, const double w_old,
                           constSpMatRef x, Vector* y_pred) {
     for (constSpMatRef::InnerIterator it(x, col); it; ++it) {
@@ -431,8 +401,6 @@ void SecondOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRe
     }
 }
 
-//template <typename Derived>
-//Eigen::MatrixBase<Derived>&
 void SecondOrderPredAndQcacheUpdate(const int layer, const int col, constMatrixRef w2,
                                     const double w_old, constSpMatRef x,
                                     Vector* y_pred, Vector* q_cache) {
@@ -446,51 +414,6 @@ void SecondOrderPredAndQcacheUpdate(const int layer, const int col, constMatrixR
 
         q_cache->coeffRef(row) += (w_new - w_old) * x_col_i;
         y_pred->coeffRef(row) += (w_new - w_old) * h_i;
-    }
-}
-
-void ThirdOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRef w,
-                                  const double w_old, constSpMatRef x, Vector* err,
-                                  Vector* q_cache, Vector* q_sqr_cache) {
-    double const w_new = w.coeffRef(layer, col);
-    for (constSpMatRef::InnerIterator it(x, col); it; ++it) {
-        const int row = it.row();
-        const double x_col_i = it.value();
-
-        const double q_i = q_cache->coeffRef(row);
-        const double q_sqr_i = q_sqr_cache->coeffRef(row);
-
-        const double h_i = x_col_i * (.5 * q_i * q_i
-                                      - w_old * x_col_i * q_i
-                                      - .5 * q_sqr_i
-                                      + x_col_i * x_col_i * w_old * w_old);
-
-        q_cache->coeffRef(row) += (w_new - w_old) * x_col_i;
-        q_sqr_cache->coeffRef(row) += (w_new * w_new - w_old * w_old) * x_col_i * x_col_i;
-        err->coeffRef(row) += (w_old - w_new) * h_i;
-    }
-}
-
-void ThirdOrderStats(const int layer, const int col, constVectorRef cost, constSpMatRef x, constMatrixRef w3,
-                     constVectorRef err, constVectorRef q_cache, constVectorRef q_sqr_cache,
-                     double* chsqr, double* che) {
-    const bool no_cost = cost.size() == 0;
-    const double w_fl = w3.coeffRef(layer, col);
-    *chsqr = *che = 0;
-    for (constSpMatRef::InnerIterator it(x, col); it; ++it) {
-        const int row = it.row();
-        const double x_col_i = it.value();
-        const double cost_i = no_cost ? 1 : cost.coeffRef(row);
-        const double q_i = q_cache.coeffRef(row);
-        const double q_sqr_i = q_sqr_cache.coeffRef(row);
-
-        const double h_i = x_col_i * (.5 * q_i * q_i
-                                      - w_fl * x_col_i * q_i
-                                      - .5 * q_sqr_i
-                                      + x_col_i * x_col_i * w_fl * w_fl);
-
-        *chsqr += cost_i * h_i * h_i;
-        *che += cost_i * h_i * err.coeffRef(row);
     }
 }
 

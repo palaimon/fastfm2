@@ -4,8 +4,7 @@
 
 #include "fastfm.h"
 #include "fastfm_impl.h"
-#include "fastfm_internal.h"
-#include "fastfm_helpers.h"
+#include "../fastfm_helpers.h"
 #if !EXTERNAL_RELEASE
 #include "solvers/fm_utils.h"
 #endif
@@ -84,8 +83,8 @@ protected:
     Matrix w2_;
     Vector w1_;
     double w0_;
-    fm_coef coef_;
-    fm_settings settings_;
+    ModelParam coef_;
+    SolverSettings settings_;
     Data* pd_;
     Model* pm_;
     Settings* ps_;
@@ -242,11 +241,11 @@ protected:
     Vector w1_i_;
 
     double w0_;
-    fm_coef coef_;
-    fm_settings settings_;
+    ModelParam coef_;
+    SolverSettings settings_;
 
-    fm_coef coef_naive;
-    fm_settings settings_naive_;
+    ModelParam coef_naive;
+    SolverSettings settings_naive_;
 
     const std::vector<double> v_empty_;
 
