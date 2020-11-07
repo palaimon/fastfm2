@@ -41,6 +41,7 @@ build_fastfm_image:
   tags:
     - docker
   stage: build
+  needs: ["build_deps_images"]
   script:
     - docker pull $FASTFM_IMG_TAG || true
     - >
