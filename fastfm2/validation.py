@@ -23,6 +23,7 @@ def _check_matrix_is_sparse(func):
     """
     Check that input is a scipy sparse matrix and raise warning otherwise.
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if 'accept_sparse' in kwargs and not sparse.isspmatrix(args[0]):
@@ -30,6 +31,7 @@ def _check_matrix_is_sparse(func):
                             'data is required.')
         result = func(*args, **kwargs)
         return result
+
     return wrapper
 
 
@@ -162,8 +164,8 @@ def check_array(array, accept_sparse=None, dtype="numeric", order=None,
         if ensure_2d:
             array = np.atleast_2d(array)
         if dtype_numeric:
-            if (hasattr(array, "dtype") and
-                    getattr(array.dtype, "kind", None) == "O"):
+            if (hasattr(array, "dtype")
+                    and getattr(array.dtype, "kind", None) == "O"):
                 # if input is object, convert to float.
                 dtype = np.float64
             else:

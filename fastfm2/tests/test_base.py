@@ -35,6 +35,7 @@ def get_test_problem(task='regression'):
         y = y_labels
     return w0, w, V, y, X
 
+
 @no_als_classification_skip
 def test_fm_classification_predict_proba():
     w0, w, V, y, X = get_test_problem(task='classification')

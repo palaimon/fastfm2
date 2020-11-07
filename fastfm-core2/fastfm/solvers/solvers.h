@@ -1,10 +1,9 @@
 //
-// Created by Alex Joz on 12.06.2020.
+// Copyright [2020] <palaimon.io>
 //
 
-#ifndef _SOLVERS_H_
-#define _SOLVERS_H_
-
+#ifndef FASTFM_CORE2_FASTFM_SOLVERS_SOLVERS_H_
+#define FASTFM_CORE2_FASTFM_SOLVERS_SOLVERS_H_
 
 #include <Eigen/Core>
 #include "fastfm.h"
@@ -16,21 +15,25 @@ namespace cd {
 
 void Predict(Model* m, Data* d);
 
-void FitSquareLoss(Data* d, Model* m, Settings* s, fit_callback_t cb, python_function_t python_func);
+void FitSquareLoss(Data* d,
+                   Model* m,
+                   Settings* s,
+                   fit_callback_t cb,
+                   python_function_t python_func);
 
 void FitSquareLoss(Data* d, Model* m, Settings* s);
 
-}
+}  // namespace cd
 
-//todo: add more solvers here for release =)
+// todo: add more solvers here for release =)
 #if !EXTERNAL_RELEASE
-    #define SGD
-    #define RANKING
-    #define ICD
-    #define MCMC
-    #define IRLS
-#endif //EXTERNAL_RELEASE
-}
+#define SGD
+#define RANKING
+#define ICD
+#define MCMC
+#define IRLS
+#endif  // EXTERNAL_RELEASE
+}  // namespace fastfm
 
-#endif //_SOLVERS_H_
+#endif  // FASTFM_CORE2_FASTFM_SOLVERS_SOLVERS_H_
 

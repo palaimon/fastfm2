@@ -4,6 +4,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project(fastfm)
 
+include_directories(${CMAKE_SOURCE_DIR})
 include_directories(3rdparty/eigen)
 
 option(FASTFM_BUILD_WITH_GPERFTOOLS "Build with 'gperftools'" OFF)
@@ -27,3 +28,4 @@ endif()
 enable_testing()
 add_subdirectory(fastfm_tests)
 include_directories(fastfm_tests)
+

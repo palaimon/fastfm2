@@ -1,9 +1,9 @@
 //
-// Created by ibayer on 22.10.15.
+// Copyright [2020] <palaimon.io>
 //
 
-#ifndef FASTFM_CD_UTILS_H
-#define FASTFM_CD_UTILS_H
+#ifndef FASTFM_CORE2_FASTFM_SOLVERS_CD_IMPL_H_
+#define FASTFM_CORE2_FASTFM_SOLVERS_CD_IMPL_H_
 
 #include "fastfm_impl.h"
 
@@ -44,26 +44,36 @@ void SecondOrderStats(const int layer, const int col, constVectorRef cost,
 
 Vector Qcache(const int f, constSpMatRef x, constMatrixRef w);
 
-Vector Qcache(const int f, constSpMatRef x, constVectorRef cost, constMatrixRef w);
+Vector Qcache(const int f,
+              constSpMatRef x,
+              constVectorRef cost,
+              constMatrixRef w);
 
 void FirstOrderPredUpdate(const int col, const double w_new, const double w_old,
                           constSpMatRef x, Vector* y_pred);
 
-// TODO use calc error only on the fly
+// TODO(Immanuel): use calc error only on the fly
 void FirstOrderErrUpdate(const int col, const double w_new, const double w_old,
                          constSpMatRef x, Vector* err);
 
-void SecondOrderErrAndQcacheUpdate(const int layer, const int col, constMatrixRef w2,
-                                   const double w_old, constSpMatRef x,
-                                   Vector* err, Vector* q_cache);
+void SecondOrderErrAndQcacheUpdate(const int layer,
+                                   const int col,
+                                   constMatrixRef w2,
+                                   const double w_old,
+                                   constSpMatRef x,
+                                   Vector* err,
+                                   Vector* q_cache);
 
-void SecondOrderPredAndQcacheUpdate(const int layer, const int col, constMatrixRef w2,
-                                    const double w_old, constSpMatRef x,
-                                    Vector* err, Vector* q_cache);
+void SecondOrderPredAndQcacheUpdate(const int layer,
+                                    const int col,
+                                    constMatrixRef w2,
+                                    const double w_old,
+                                    constSpMatRef x,
+                                    Vector* err,
+                                    Vector* q_cache);
 
-}
-}
-}
+}  // namespace impl
+}  // namespace cd
+}  // namespace fastfm
 
-
-#endif //FASTFM_CD_UTILS_H
+#endif  // FASTFM_CORE2_FASTFM_SOLVERS_CD_IMPL_H_
