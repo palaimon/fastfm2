@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.base import RegressorMixin
 
 from ..base import (FactorizationMachine,
-                   _check_warm_start, _init_parameter, _settings_factory)
+                    _check_warm_start, _init_parameter, _settings_factory)
 from ..validation import check_consistent_length, check_array
 
 

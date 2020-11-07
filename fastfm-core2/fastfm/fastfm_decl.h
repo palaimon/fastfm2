@@ -1,5 +1,9 @@
-#ifndef FASTFM_DECL_H
-#define FASTFM_DECL_H
+//
+// Copyright [2020] <palaimon.io>
+//
+
+#ifndef FASTFM_CORE2_FASTFM_FASTFM_DECL_H_
+#define FASTFM_CORE2_FASTFM_FASTFM_DECL_H_
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -17,5 +21,6 @@ using constVectorRef = const Eigen::Ref<const Vector, 0, Eigen::OuterStride<>>;
 using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using MatrixRef = Eigen::Ref<Matrix, 0, Eigen::OuterStride<>>;
 using constMatrixRef = const Eigen::Ref<const Matrix, 0, Eigen::OuterStride<>>;
+using outerStride = Eigen::OuterStride<>;
 
-#endif // FASTFM_DECL_H
+#endif  // FASTFM_CORE2_FASTFM_FASTFM_DECL_H_

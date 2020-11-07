@@ -8,8 +8,6 @@ RUN pushd src/fastfm-core2                                              && \
     cmake --build _lib                                                  && \
     popd
 
-RUN ./src/fastfm-core2/_lib/fastfm_tests/api_tests/runApiTestsCatch
-
 COPY setup.py src/setup.py
 COPY version.py src/version.py
 COPY docker/scripts/compile_wheels.sh \
@@ -18,6 +16,13 @@ COPY docker/scripts/compile_wheels.sh \
 
 COPY version.txt src/version.txt
 COPY ./fastfm2 src/fastfm2
+
+RUN pip install flake8
+RUN python -m flake8 \
+        --ignore D203,E741,C901,W503,W504 \
+        --exclude .git,__pycache__,doc/source/conf.py,build,dist,fastfm-core2 \
+        --max-complexity 10 \
+        ./src/fastfm2
 
 RUN chmod a+x ./scripts/*.sh
 

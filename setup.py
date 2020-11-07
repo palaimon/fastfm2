@@ -9,10 +9,11 @@ from Cython.Build import cythonize
 from version import get_version_from_txt
 
 ffm2_include_dir = os.getenv("FFM_INCLUDE_DIR", 'fastfm-core2/fastfm/')
-ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR", 'fastfm-core2/fastfm/solvers/')
+ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR",
+                                     'fastfm-core2/fastfm/solvers/')
 ffm2_library_dir = os.getenv("FFM_LIBRARY_DIR", 'fastfm-core2/_lib/fastfm/')
-ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR", 'fastfm-core2/_lib/fastfm/solvers')
-
+ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR",
+                                     'fastfm-core2/_lib/fastfm/solvers')
 
 ext_modules = cythonize([
     Extension('ffm2', ['fastfm2/core/ffm2.pyx'],
@@ -25,10 +26,9 @@ ext_modules = cythonize([
               extra_compile_args=['-std=c++11', '-Wall'],
               extra_link_args=['-std=c++11', '-mstackrealign'],
               language="c++",
-              cython_directives = {'language_level': "3"})],
+              cython_directives={'language_level': "3"})],
     compile_time_env=dict(EXTERNAL_RELEASE=True)
 )
-
 
 setup(
     name='fastfm2',
