@@ -3,6 +3,7 @@ services:
   - docker:dind
   
 stages:
+  - deps
   - build
   - test
   - manual
@@ -22,7 +23,7 @@ variables:
 build_deps_images:
   tags:
     - docker
-  stage: build
+  stage: deps
   script:
     - docker pull $BASE_IMG_TAG || true
     - docker build --cache-from $BASE_IMG_TAG -t $BASE_IMG_TAG -f docker/base.docker .
@@ -41,7 +42,6 @@ build_fastfm_image:
   tags:
     - docker
   stage: build
-  needs: ["build_deps_images"]
   script:
     - docker pull $FASTFM_IMG_TAG || true
     - >
