@@ -1,6 +1,19 @@
+// Copyright (C) 2020 Palaimon GmbH
 //
-// Copyright [2020] <palaimon.io>
+// Author: Immanuel Bayer (algorithm design & implementation)
+//         Alexander Pisarenko (implementation)
 //
+// Licensed under the GNU Affero General Public License, Version 3.0
+// (the "License"); you may not use this file except in compliance with
+// the License. You may obtain a copy of the License at
+//
+//      https://www.gnu.org/licenses/agpl-3.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #ifndef FASTFM_CORE2_FASTFM_FASTFM_H_
 #define FASTFM_CORE2_FASTFM_FASTFM_H_
@@ -20,7 +33,7 @@ namespace fastfm {
 class Settings {
  public:
   Settings();
-  /** Constructor in the case of solver settings string serialization
+  /** Constructor requires parameters to be serialized to string.
     *
     * \param settings_map <name>-<value> map of strings
     */
@@ -60,7 +73,7 @@ class Model {
 
   /** @brief Matrix expression mapping an existing array of data.
    *
-   * For 2d FM model parameters supported names are `w2` and `w3`
+   * Supported FM model parameters are `w2` and `w3`
    *
    * @param name name of model parameter
    * @param data pointer to the array location to map the memory
@@ -77,7 +90,8 @@ class Model {
   /** @brief Packed scalars mapping an existing array of data.
    *
    * Used for mapping of additional named scalar values packed together in a contiguous array.
-   * Keys should be string formatted like 'key1,key2,keyN', where `key*` - parameter name. Do not use spaces.
+   * Key names should be concatenated to single string formatted like
+   * 'key1,key2,keyN', where `key*` is the individual parameter name. Do not use spaces.
    *
    * Correct keys example:
    * 'alpha,beta,gamma,mu', while `size` should equal to the number of parameters. In this case size==4.
@@ -126,7 +140,7 @@ class Data {
 
   /** @brief Matrix expression mapping an existing array of data.
    *
-   * For 2d FM data parameters currently supported name is `y_rec` only.
+   * For FM data parameters currently the only supported name is `y_rec`.
    *
    * @param name name of data parameter
    * @param data pointer to the array location to map the memory
@@ -179,12 +193,15 @@ typedef void* python_function_t;
 typedef bool
 (* fit_callback_t)(std::string json_in, python_function_t python_func);
 
-//! Fits a model using the specified settings, data and callback.
+//! Fits a model using the specified settings, data and executes the callback
+// at each solver iteration.
 /*!
   \param s the settings that specify how the model should be trained.
   \param m the initial model parameter.
   \param d the data required for the selected settings.
-  \sa QTstyle_Test(), ~QTstyle_Test(), testMeToo() and publicVar()
+  \param cb wraps python_func for correct cpp use.
+            expected valid json as string param.
+  \python_func function object used for actual callback execution
   TODO add link to the regression tests.
 */
 void fit(Settings* s,
@@ -200,7 +217,6 @@ void fit(Settings* s, Model* m, Data* d);
 /*!
   \param m the model parameter.
   \param d the data required to make the predictions.
-  \sa QTstyle_Test(), ~QTstyle_Test(), testMeToo() and publicVar()
   TODO add link to the regression tests.
   TODO can we make the Model argument const?
 */

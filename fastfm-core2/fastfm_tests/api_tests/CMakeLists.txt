@@ -18,6 +18,6 @@ include_directories(${fm-lib_SOURCE_DIR})
 
 add_executable(runApiTestsCatch ${SOURCE_FILES})
 
-target_link_libraries(runApiTestsCatch fastfm solvers)
+target_link_libraries(runApiTestsCatch fastfm solvers helpers)
 
 add_test(NAME RunApiTestsCatch COMMAND runApiTestsCatch)
