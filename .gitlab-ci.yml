@@ -18,6 +18,7 @@ variables:
   BASE_IMG_TAG: $CI_REGISTRY_IMAGE:base
   DEPS_IMG_TAG: $CI_REGISTRY_IMAGE:deps
   FASTFM_IMG_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  PYPI_REPO: https://pypi.palaimon.io/
 
 
 build_deps_images:
@@ -71,8 +72,14 @@ build_wheels_manual:
   except:
     refs:
       - master
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - apk add --update gcc musl-dev libffi-dev openssl-dev python3 python3-dev py3-pip && rm -rf /var/cache/apk/*
+    - pip install twine
   script:
     - docker run -i --entrypoint ./scripts/compile_wheels.sh -v $(pwd)/wheelhouse:/wheelhouse $FASTFM_IMG_TAG
+    - twine upload --repository-url $PYPI_REPO --username $POETRY_HTTP_BASIC_PYPI_USERNAME --password $POETRY_HTTP_BASIC_PYPI_PASSWORD $(pwd)/wheelhouse/*
+
   artifacts:
     paths:
       - wheelhouse/*.whl
