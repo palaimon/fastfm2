@@ -1,3 +1,6 @@
+include_directories(helpers)
+add_subdirectory(helpers)
+
 add_subdirectory(api_tests)
 
 if(NOT EXTERNAL_RELEASE)

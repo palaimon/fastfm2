@@ -3,7 +3,6 @@ project(fm-lib)
 set(HEADER_FILES
         fastfm.h
         fastfm_impl.h
-        datasets.h
     )
 
 if(NOT EXTERNAL_RELEASE)
@@ -20,7 +19,6 @@ endif()
 
 set(SOURCE_FILES
         fastfm.cpp
-        datasets.cpp
    )
 
 if(NOT EXTERNAL_RELEASE)
