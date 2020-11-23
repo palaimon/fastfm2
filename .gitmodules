@@ -1,0 +1,3 @@
+[submodule "fastfm-core2/3rdparty/eigen"]
+	path = fastfm-core2/3rdparty/eigen
+	url = https://gitlab.com/libeigen/eigen.git
