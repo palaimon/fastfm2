@@ -44,11 +44,15 @@ jobs:
         name: Install Python
         with:
           python-version: '3.7'
-
       - name: Install cibuildwheel
         run: |
           python -m pip install cibuildwheel==1.7.2
-
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.5
+        with:
+          cmake-version: '3.12.x'
+      - name: Check cmake
+        run: cmake --version
       - name: Build wheels
         run: |
           python -m cibuildwheel --output-dir wheelhouse
