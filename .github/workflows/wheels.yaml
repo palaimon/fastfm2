@@ -30,12 +30,13 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
         env:
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
+          CIBW_SKIP: pp*
           CIBW_BEFORE_BUILD_LINUX: curl -o cmake312.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0.tar.gz && \
                                    tar -zxvf cmake312.tar.gz                                                                                 && \
                                    cd cmake-3.12.0 && ./bootstrap && make && make install                                                    && \
                                    ln -fs /usr/local/bin/cmake /usr/bin/cmake && cd .. && \
                                    make
-
           CIBW_BEFORE_BUILD_MACOS: make
           CIBW_BUILD: cp${{ matrix.python }}-*
           CIBW_BUILD_VERBOSITY: 3
