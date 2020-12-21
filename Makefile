@@ -1,13 +1,9 @@
-PYTHON ?= python3
-
 all:
-	$(PYTHON) version.py
 	( cd fastfm-core2 ; \
 	  cmake -H. -B_lib -DEXTERNAL_RELEASE=1 \
 	                   -DCMAKE_BUILD_TYPE=Release \
 	                   -DCMAKE_DEBUG_POSTFIX=d; \
 	  cmake --build _lib )
-	$(PYTHON) setup.py build_ext --inplace
 
 .PHONY : pyclean
 pyclean:
