@@ -11,7 +11,7 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        python-version: [ 3.6, 3.7, 3.8 ]
+        python: [36, 37, 38, 39]
         os: [ windows-latest, ubuntu-latest, macos-latest ]
         bitness: [ 32, 64 ]
         include:
