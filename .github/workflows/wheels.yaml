@@ -36,8 +36,10 @@ jobs:
             bitness: 32
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-
+      - name: Checkout reposistory
+        uses: actions/checkout@master
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
       - uses: actions/setup-python@v2
         name: Install Python
         with:
@@ -52,6 +54,7 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BEFORE_BUILD: make
+          CIBW_SKIP: cp27-* cp35-*
 
       - uses: actions/upload-artifact@v2
         with:
