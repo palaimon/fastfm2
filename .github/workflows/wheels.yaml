@@ -54,6 +54,7 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BEFORE_BUILD: make
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_SKIP: cp27-* cp35-*
 
       - uses: actions/upload-artifact@v2
