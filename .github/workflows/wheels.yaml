@@ -11,7 +11,7 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        python: [37]
+        python: [36, 37, 38]
         os: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -30,8 +30,6 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
         env:
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
-          CIBW_SKIP: pp*
           CIBW_BEFORE_ALL_LINUX: curl -o cmake312.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0.tar.gz && tar -zxvf cmake312.tar.gz && cd cmake-3.12.0 && ./bootstrap && make && make install && ln -fs /usr/local/bin/cmake /usr/bin/cmake
           CIBW_BEFORE_BUILD: make
           CIBW_BUILD: cp${{ matrix.python }}-*
