@@ -11,8 +11,8 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        python: [36, 37, 38]
-        os: [ ubuntu-latest, macos-latest ]
+        python: [37]
+        os: [ windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout reposistory
