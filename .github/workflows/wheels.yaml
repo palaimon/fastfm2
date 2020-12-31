@@ -11,8 +11,8 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        python: [37]
-        os: [ macos-latest]
+        python: [36, 37, 38]
+        os: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout reposistory
@@ -33,7 +33,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: curl -o cmake312.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0.tar.gz && tar -zxvf cmake312.tar.gz && cd cmake-3.12.0 && ./bootstrap && make && make install && ln -fs /usr/local/bin/cmake /usr/bin/cmake
           CIBW_BEFORE_BUILD: make
           CIBW_BUILD: cp${{ matrix.python }}-*
-#          CIBW_BUILD_VERBOSITY: 3
+          # CIBW_BUILD_VERBOSITY: 3
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {project}/fastfm2
 
@@ -53,15 +53,15 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
-#        working-directory: ./dist/
+        working-directory: ./dist/
 
       - name: Publish package to PyPI
-          # upload only on a tagged commit
-          # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        # upload only on a tagged commit
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: ${{ secrets.POETRY_HTTP_BASIC_PYPI_USERNAME }}
           password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
           repository_url: ${{ secrets.POETRY_REPOSITORIES_PALAIMON_URL }}
-          skip_existing: true  # todo: switch off after conditional flow is set
-      #          verbose: true
+          # skip_existing: true
+          # verbose: true
