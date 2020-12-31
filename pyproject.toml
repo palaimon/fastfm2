@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastfm2"
-version = "0.3.10"
+version = "0.3.11"
 description = "A Library for Factorization Machines"
 authors = ["palaimon.io <oss@mail.palaimon.io>"]
 license = "GNU AGPLv3"
