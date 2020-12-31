@@ -37,7 +37,8 @@ jobs:
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: pytest {project}/fastfm2
 
-      - uses: actions/upload-artifact@v2
+      - name: Publish artifact
+        uses: actions/upload-artifact@v2
         with:
           path: ./dist/*.whl
 
