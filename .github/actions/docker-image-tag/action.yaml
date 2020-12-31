@@ -2,12 +2,15 @@ name: 'ImageTagger'
 description: 'Construct docker image tag based on current branch name'
 inputs:
   custom_tag:
-    description: 'docker custom tag'
+    description: 'Custom input tag'
     required: false
 outputs:
-  tag:
-    description: "Image tag"
-    value: ${{ steps.imtag-generator.outputs.tags }}
+  version_tag:
+    description: "Image version tag"
+    value: ${{ steps.imtag-generator.outputs.version_tag }}
+  custom_tag:
+    description: "Image custom tag"
+    value: ${{ steps.imtag-generator.outputs.custom_tag }}
 runs:
   using: "composite"
   steps:
