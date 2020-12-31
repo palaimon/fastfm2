@@ -15,7 +15,6 @@
 #include "datasets.h"
 
 #include <unordered_map>
-#include <numeric>
 
 #include "solvers/cd_impl.h"
 
