@@ -44,19 +44,19 @@ jobs:
            tags: ${{ steps.base_prep.outputs.custom_tag }}
            cache-from: type=local,src=/tmp/.buildx-cache
            cache-to: mode=max,type=local,dest=/tmp/.buildx-cache
-
-      - name: Define deps image name
-        id: deps_prep
-        uses: ./.github/actions/docker-image-tag
-        with:
-          custom_tag: 'deps'
-
-      - name: Build deps image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./docker/deps.docker
-          push: true
-          tags: ${{ steps.deps_prep.outputs.custom_tag }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: mode=max,type=local,dest=/tmp/.buildx-cache
+#
+#      - name: Define deps image name
+#        id: deps_prep
+#        uses: ./.github/actions/docker-image-tag
+#        with:
+#          custom_tag: 'deps'
+#
+#      - name: Build deps image
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./docker/deps.docker
+#          push: true
+#          tags: ${{ steps.deps_prep.outputs.custom_tag }}
+#          cache-from: type=local,src=/tmp/.buildx-cache
+#          cache-to: mode=max,type=local,dest=/tmp/.buildx-cache
