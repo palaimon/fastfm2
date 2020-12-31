@@ -6,7 +6,7 @@ from distutils.core import Distribution, Extension
 from Cython.Build import cythonize
 import numpy
 
-from version import get_version_from_txt
+from version import get_version_from_pyproject
 
 ffm2_include_dir = os.getenv("FFM_INCLUDE_DIR", 'fastfm-core2/fastfm/')
 ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR",
@@ -40,7 +40,7 @@ def build():
         {"name": "fastfm2",
          "ext_modules": ext_modules,
          "package_data": {'fastfm2': ['fastfm2/core/*.pxd']},
-         "version": get_version_from_txt(),
+         "version": get_version_from_pyproject(),
          })
 
     distribution.package_dir = "fastfm2"
