@@ -11,8 +11,8 @@ jobs:
       # Ensure that a wheel builder finishes even if another fails
       fail-fast: false
       matrix:
-        python: [36, 37, 38]
-        os: [ ubuntu-latest, macos-latest]
+        python: [37]
+        os: [ macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout reposistory
@@ -42,13 +42,27 @@ jobs:
         with:
           path: ./dist/*.whl
 
+  upload_pypi:
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./dist/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./dist/
+
       - name: Publish package to PyPI
-        # upload only on a tagged commit
-        # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+          # upload only on a tagged commit
+          # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: ${{ secrets.POETRY_HTTP_BASIC_PYPI_USERNAME }}
           password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
           repository_url: ${{ secrets.POETRY_REPOSITORIES_PALAIMON_URL }}
           skip_existing: true  # todo: switch off after conditional flow is set
-#          verbose: true
+      #          verbose: true
