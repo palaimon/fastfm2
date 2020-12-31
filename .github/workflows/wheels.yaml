@@ -35,7 +35,7 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-*
           CIBW_BUILD_VERBOSITY: 3
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: pytest fastfm2
+          CIBW_TEST_COMMAND: pytest {project}/fastfm2
 
       - uses: actions/upload-artifact@v2
         with:
