@@ -1,0 +1,67 @@
+name: WHL
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        python: [36, 37, 38]
+        os: [ ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout reposistory
+        uses: actions/checkout@master
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.7'
+      - name: Install cibuildwheel
+        run: |
+          python -m pip install cibuildwheel==1.7.2
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BEFORE_ALL_LINUX: curl -o cmake312.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0.tar.gz && tar -zxvf cmake312.tar.gz && cd cmake-3.12.0 && ./bootstrap && make && make install && ln -fs /usr/local/bin/cmake /usr/bin/cmake
+          CIBW_BEFORE_BUILD: make
+          CIBW_BUILD: cp${{ matrix.python }}-*
+          # CIBW_BUILD_VERBOSITY: 3
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest {project}/fastfm2
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: ./dist/*.whl
+
+  upload_pypi:
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./dist/
+
+      - name: Publish package to PyPI
+        # upload only on a tagged commit
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: ${{ secrets.POETRY_HTTP_BASIC_PYPI_USERNAME }}
+          password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
+          repository_url: ${{ secrets.POETRY_REPOSITORIES_PALAIMON_URL }}
+          # skip_existing: true
+          # verbose: true
