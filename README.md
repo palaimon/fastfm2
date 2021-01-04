@@ -1,4 +1,6 @@
 # Welcome to fastfm v2
+![CI-Badge](https://github.com/palaimon/fastfm2/workflows/CI/badge.svg)
+
 > NB: This is still in early development. Use [v1](https://github.com/ibayer/fastFM) unless you want to contribute to the next version of fastai
 
 
