@@ -18,6 +18,7 @@ rm -rf version.py
 rm -rf version.txt
 rm -rf .dockerignore
 rm -rf .flake8
+rm -rf generate_requierments.sh
 
 rm -rf fastfm-core2/_lib
 rm -rf fastfm-core2/CMakeLists.txt
