@@ -10,6 +10,7 @@ RUN pushd src/fastfm-core2                                              && \
 COPY build.py \
      README.md \
      version.py \
+     pyproject.toml \
      src/
 COPY docker/scripts/compile_wheels.sh \
      docker/scripts/run_tests.sh      \
@@ -25,7 +26,8 @@ RUN python -m flake8 \
 
 RUN chmod a+x ./scripts/*.sh
 
-RUN pip wheel --no-deps -w wheelhouse/ src/ && \
-    auditwheel repair wheelhouse/*.whl      && \
-    pip install --no-index --no-cache-dir --find-links=./wheelhouse fastfm2
+RUN pip wheel -w /wheelhouse/ src/                 && \
+    auditwheel repair /wheelhouse/fastfm*.whl      && \
+    pip install --no-index --no-cache-dir --find-links=/wheelhouse fastfm2
+
 
