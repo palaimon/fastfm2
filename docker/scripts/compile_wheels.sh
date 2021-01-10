@@ -12,3 +12,4 @@ for whl in wheelhouse/*.whl
 	    auditwheel repair "$whl"
 	    rm "$whl"
 done
+

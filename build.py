@@ -8,11 +8,11 @@ import numpy
 
 from version import get_version_from_pyproject
 
-ffm2_include_dir = os.getenv("FFM_INCLUDE_DIR", 'fastfm-core2/fastfm/')
-ffm2_solvers_include_dir = os.getenv("FFM_INCLUDE_SOLVERS_DIR",
+ffm2_include_dir = os.getenv('FFM_INCLUDE_DIR', 'fastfm-core2/fastfm/')
+ffm2_solvers_include_dir = os.getenv('FFM_INCLUDE_SOLVERS_DIR',
                                      'fastfm-core2/fastfm/solvers/')
-ffm2_library_dir = os.getenv("FFM_LIBRARY_DIR", 'fastfm-core2/_lib/fastfm/')
-ffm2_library_solvers_dir = os.getenv("FFM_LIBRARY_SOLVERS_DIR",
+ffm2_library_dir = os.getenv('FFM_LIBRARY_DIR', 'fastfm-core2/_lib/fastfm/')
+ffm2_library_solvers_dir = os.getenv('FFM_LIBRARY_SOLVERS_DIR',
                                      'fastfm-core2/_lib/fastfm/solvers')
 
 
@@ -33,17 +33,17 @@ def build():
     ext_modules = cythonize(
         extensions,
         compile_time_env=dict(EXTERNAL_RELEASE=True),
-        compiler_directives={"binding": True, "language_level": 3},
+        compiler_directives={'binding': True, 'language_level': 3},
     )
 
     distribution = Distribution(
-        {"name": "fastfm2",
-         "ext_modules": ext_modules,
-         "package_data": {'fastfm2': ['fastfm2/core/*.pxd']},
-         "version": get_version_from_pyproject(),
+        {'name': 'fastfm2',
+         'ext_modules': ext_modules,
+         'package_data': {'fastfm2': ['fastfm2/core/*.pxd']},
+         'version': get_version_from_pyproject(),
          })
 
-    distribution.package_dir = "fastfm2"
+    distribution.package_dir = 'fastfm2'
 
     cmd = build_ext(distribution)
     cmd.ensure_finalized()
@@ -58,5 +58,5 @@ def build():
         os.chmod(relative_extension, mode)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     build()

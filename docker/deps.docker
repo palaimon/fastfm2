@@ -1,6 +1,14 @@
 FROM registry.gitlab.palaimon.io/fastfm/fastfm2:base
 
+# Generate rerquirments.txt
+COPY generate_requierments.sh \
+     pyproject.toml \
+     poetry.lock \
+     src/
+WORKDIR src
+RUN ./generate_requierments.sh
+
+WORKDIR /
 # Install python reqs
-COPY requirements.txt src/requirements.txt
 COPY docker/scripts/install_pyreqs.sh ./scripts/install_pyreqs.sh
 RUN chmod a+x ./scripts/*.sh && ./scripts/install_pyreqs.sh
