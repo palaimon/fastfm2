@@ -8,7 +8,7 @@ RUN pushd src/fastfm-core2                                              && \
     popd
 
 COPY build.py \
-     README.rst \
+     README.md \
      version.py \
      src/
 COPY docker/scripts/compile_wheels.sh \
