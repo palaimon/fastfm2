@@ -34,7 +34,7 @@ build_deps_images:
     - docker push $DEPS_IMG_TAG
   only:
     changes:
-      - requirements.txt
+      - pyproject.toml
       - docker/base.docker
       - docker/deps.docker
 
