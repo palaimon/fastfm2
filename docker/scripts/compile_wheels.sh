@@ -3,7 +3,7 @@
 for PYBIN in /opt/python/*/bin;
 	do
       "${PYBIN}/pip" wheel -w wheelhouse/ src/
-      "${PYBIN}/pip" install --no-index --no-cache-dir --find-links=/wheelhouse fastfm
+      "${PYBIN}/pip" install --no-index --no-cache-dir --find-links=/wheelhouse fastfm2
       "${PYBIN}/python" -m pytest src/fastfm2
 done
 
@@ -12,4 +12,3 @@ for whl in wheelhouse/fastfm*.whl
 	    auditwheel repair "$whl"
 done
 
-rclone copy wheelhouse/fasfm*.whl data:palaimon-releases/fastfm/wheelhouse

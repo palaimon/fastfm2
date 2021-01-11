@@ -30,4 +30,3 @@ RUN pip wheel -w /wheelhouse/ src/                 && \
     auditwheel repair /wheelhouse/fastfm*.whl      && \
     pip install --no-index --no-cache-dir --find-links=/wheelhouse fastfm2
 
-
