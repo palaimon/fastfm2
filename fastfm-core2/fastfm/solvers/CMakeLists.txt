@@ -16,3 +16,7 @@ if(NOT EXTERNAL_RELEASE)
 endif()
 
 add_library(solvers ${solvers_SRC})
+
+if(MSVC)
+    set_target_properties(solvers PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$<0:>)
+endif(MSVC)

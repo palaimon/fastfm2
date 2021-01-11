@@ -34,7 +34,7 @@ build_deps_images:
     - docker push $DEPS_IMG_TAG
   only:
     changes:
-      - requirements.txt
+      - pyproject.toml
       - docker/base.docker
       - docker/deps.docker
 
@@ -78,9 +78,9 @@ build_wheels_manual:
     - pip install twine
   script:
     - docker run -i --entrypoint ./scripts/compile_wheels.sh -v $(pwd)/wheelhouse:/wheelhouse $FASTFM_IMG_TAG
-    - twine upload --repository-url $PYPI_REPO --username $POETRY_HTTP_BASIC_PYPI_USERNAME --password $POETRY_HTTP_BASIC_PYPI_PASSWORD $(pwd)/wheelhouse/*
+    - twine upload --repository-url $PYPI_REPO --username $POETRY_HTTP_BASIC_PYPI_USERNAME --password $POETRY_HTTP_BASIC_PYPI_PASSWORD $(pwd)/wheelhouse/fastfm*.whl
 
   artifacts:
     paths:
-      - wheelhouse/*.whl
+      - wheelhouse/fastfm*.whl
     expire_in: 30 days

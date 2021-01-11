@@ -16,32 +16,45 @@ We infrequently push wheels to pypi that you can install with `pip install fastf
 
 ### Source Install
 
-You can build the latest version from source (requires `cmake>=3.12`) by first compiling the c++ library by running
+You can build the latest version from source (requires `cmake>=3.12`) by first compiling the c++ library from the project root directory:
 
 ```bash
 make
 ```
-from the root dir and then install the lib locally for dev
+then install fastfm2 python lib locally:
 
+#### User install
+
+```bash
+pip install .
+```
+Also you can build **python wheels**:
+
+`macos`:
+```shell
+pip wheel . --no-deps -w wheelhouse
+delocate-wheel -w fixed_macos_whls wheelhouse/fastfm*.whl
+```
+
+`linux`:
+```shell
+pip wheel . --no-deps -w wheelhouse
+auditwheel repair wheelhouse/fastfm-*.whl
+```
+(`auditwheel` used instead `delocate`).
+
+#### Dev install
+
+For development we use poetry as dependency managmer:
 ```bash
 poetry install
 ```
 
-or build the **python weehls**.
-
-`macos`:
-```
-poetry run python setup.py bdist_wheel                  && \
-poetry run delocate-wheel -w fixed_whl_macos dist/*.whl && \
-rm -rf build && rm -rf dist
+and wheels:
+```shell
+poetry build
 ```
 
-`linux` [auditwheel instead delocate]:
-
-```
-poetry run python setup.py bdist_wheel                  && \
-poetry run auditwheel repair dist/fastfm-*.whl
-```
 
 ## Tests
 

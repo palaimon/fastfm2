@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "fastfm2"
-version = "0.3.11"
+version = "0.3.14"
 description = "A Library for Factorization Machines"
 authors = ["palaimon.io <oss@mail.palaimon.io>"]
 license = "GNU AGPLv3"
 readme = "README.md"
 repository = "https://github.com/palaimon/fastfm2"
 packages = [{ include = "fastfm2" }]
-include = [{ path = "./*.so", format = "wheel" }]
+include = [{ path = "./*.so", format = "wheel" },
+           { path = "./*.pyd", format = "wheel" }]
 
 [tool.poetry.build]
 generate-setup-file = false
@@ -21,7 +22,7 @@ scipy = "^1.3"
 
 [tool.poetry.dev-dependencies]
 jedi = "^0.15.1"
-flake8 = "^3.7"
+flake8 = "^3.8.4"
 pylint = "^2.3"
 pytest = "^5.1"
 jupyterlab = "^1.0"
@@ -34,5 +35,5 @@ delocate = "^0.8.0"
 requires = ["poetry-core",
             "numpy>=1.17",
             "wheel",
-            "Cython~=0.29.13"]
+            "cython~=0.29.13"]
 build-backend = "poetry.core.masonry.api"
