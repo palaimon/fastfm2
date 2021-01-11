@@ -1,8 +1,53 @@
-.git
 Dockerfile
-_lib
-.venv/
-.env/
-.pytest_cache
+.git
+.idea
+.venv
+.env
+.Python
+.python-version
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# CMake template
+**/CMakeCache.txt
+**/CMakeFiles
+**/CMakeScripts
+**/cmake_install.cmake
+**/install_manifest.txt
+**/CTestTestfile.cmake
+
+# Linux template
+*~
+
+# Linux trash folders
+.Trash-*
+
+# Packages
+env/
 build/
-.gitlab-ci.yml
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+logs
+*.log
