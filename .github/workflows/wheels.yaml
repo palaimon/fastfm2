@@ -67,6 +67,7 @@ jobs:
           CIBW_ENVIRONMENT_WINDOWS: PLATFORM=${{ matrix.platform_id }}
           CIBW_BEFORE_BUILD: make
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_SKIP: cp36-win*
 #          CIBW_BUILD_VERBOSITY: 3
           DISTUTILS_USE_SDK: 1
           MSSdk: 1
