@@ -80,7 +80,7 @@ jobs:
           name: dist
           path: ./dist/*.whl
 
-  upload_pypi:
+  upload_local_pypi:
     needs: build_wheels
     runs-on: ubuntu-latest
     steps:
@@ -101,4 +101,29 @@ jobs:
           password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_PASSWORD }}
           repository_url: ${{ secrets.POETRY_REPOSITORIES_PALAIMON_URL }}
           # skip_existing: true
+          # verbose: true
+
+  upload_ofcl_pypi:
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./dist/
+
+      - name: Publish package to PyPI
+        # upload only on a tagged commit to master branch
+        if: >
+          github.ref == 'refs/heads/master' &&
+          github.event_name == 'push' &&
+          startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_FASTFM2_TOKEN }}
+          repository_url: https://upload.pypi.org/legacy/
           # verbose: true
