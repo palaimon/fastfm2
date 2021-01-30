@@ -1,8 +1,11 @@
 name: RELEASE
 
 on:
-  release:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["WHL"]
+    branches: [master]
+    types:
+      - completed
 
 jobs:
   upload_ofcl_pypi:
@@ -17,6 +20,7 @@ jobs:
         working-directory: ./dist/
 
       - name: Publish package to PyPI
+        if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
