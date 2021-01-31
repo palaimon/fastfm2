@@ -2,6 +2,8 @@ name: WHL
 
 on:
   push:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -79,4 +81,24 @@ jobs:
         with:
           name: dist
           path: ./dist/*.whl
-          
+
+  upload_ofcl_pypi:
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./dist/
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.POETRY_HTTP_BASIC_PYPI_FASTFM2_TOKEN }}
+          repository_url: https://upload.pypi.org/legacy/
+          # verbose: true
