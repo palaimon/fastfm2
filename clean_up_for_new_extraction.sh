@@ -5,6 +5,7 @@ rm -rf __pycache__
 rm -rf .pytest_cache
 rm -rf build
 rm -rf dist
+rm -rf notebooks
 
 rm -rf fastfm2
 rm -rf fastfm2.egg*
