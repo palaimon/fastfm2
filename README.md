@@ -69,3 +69,7 @@ For the tests to run, you'll need to install the following optional dependency:
 ```
 pip install pytest
 ```
+
+<!-- Matomo Image Tracker-->
+<img referrerpolicy="no-referrer-when-downgrade" src="https://matomo.palaimon.io/matomo.php?idsite=3&amp;rec=1" style="border:0" alt="" />
+<!-- End Matomo -->
